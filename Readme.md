@@ -26,7 +26,7 @@ catkin config --blacklist moveit_commander moveit_setup_assistant moveit_fake_co
 
 
 
-## Running
+## Running simple demo
 
 1. First make sure, you have sourced the workspace:
 
@@ -51,3 +51,30 @@ The demo will run through 3 planning stages:
 * Unconstrained planning
 * Trajectory constrained to a line
 * Trajectory constrained such that the end effector remains upright.
+
+
+
+## Running evaluation script
+
+The code is set to evaluate only a single algorithm for speed. Also, note that some of the test cases might not have a solution.
+
+1. Open two terminals. In the first window:
+
+   ```bash
+   roslaunch panda_moveit_config demo.launch
+   ```
+
+2. First generate the test cases. It'll be stored as "problems1.txt" in your workspace directory.
+
+   ```
+   rosrun constrained_expt generate_problems
+   ```
+
+3. Next run the evaluation code.
+
+   ```
+   rosrun constrained_expt run_eval
+   ```
+
+
+Currently, it is observed that some of the generated trajectories are not feasible. However we do not have a way to determine such cases and need manual verification.

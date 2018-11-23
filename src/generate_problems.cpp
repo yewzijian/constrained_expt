@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#define NUM_PROBLEMS 100
+#define NUM_PROBLEMS 20
 
 int main(int argc, char** argv)
 {
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   move_group.setPlanningTime(10.0);
   moveit::planning_interface::MoveGroupInterface::Plan computedPlan;
 
-  ofstream outFile("problems_unconstrained.txt");
+  ofstream outFile("problems1.txt");
   for (int iProb=0; iProb<NUM_PROBLEMS && ros::ok(); iProb++) {
 
     bool success = false;
