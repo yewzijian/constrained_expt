@@ -51,3 +51,9 @@ link_directories(${catkin_LIBRARY_DIRS})
 
 add_executable(simple_demo src/simple_demo.cpp)
 target_link_libraries(simple_demo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(generate_problems src/generate_problems.cpp)
+target_link_libraries(generate_problems ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(run_eval src/run_eval.cpp)
+target_link_libraries(run_eval ${catkin_LIBRARIES} ${Boost_LIBRARIES})
