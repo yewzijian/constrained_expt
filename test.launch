@@ -1,0 +1,8 @@
+<launch>
+
+  <node name="move_group_interface_tutorial" pkg="constrained_expt" type="simple_demo" respawn="false" output="screen">
+    <param name="trajectory_execution/allowed_start_tolerance" value="0.0"/>
+    <remap from="/joint_states" to="/panda/joint_states" />
+  </node>
+
+</launch>
