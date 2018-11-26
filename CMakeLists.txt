@@ -50,4 +50,18 @@ include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 
 add_executable(simple_demo src/simple_demo.cpp)
+add_executable(simple_demo3 src/simple_demo3.cpp)
+add_executable(arc_demo1 src/arc_demo1.cpp)
+add_executable(arc_demo2 src/arc_demo2.cpp)
+add_executable(arc_demo3 src/arc_demo3.cpp)
+add_executable(arc_demo4 src/arc_demo4.cpp)
+add_executable(arc_demo5 src/arc_demo5.cpp)
+
+
 target_link_libraries(simple_demo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(simple_demo3 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(arc_demo1 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(arc_demo2 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(arc_demo3 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(arc_demo4 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(arc_demo5 ${catkin_LIBRARIES} ${Boost_LIBRARIES})

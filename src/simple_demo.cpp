@@ -70,14 +70,14 @@ int main(int argc, char** argv)
   const std::string plannerStr = "RRTConnectkConfigDefault";
   // const std::string plannerStr = "PRMkConfigDefault";
 
-  // std::map<std::string, std::string> plannerParams = move_group.getPlannerParams(plannerStr, PLANNING_GROUP);
-  // std::cout << "Default parameters" << std::endl;
-  // std::cout << "==================" << std::endl;
-  // for (auto it : plannerParams){
-  //   std::cout << it.first << ": " << it.second << std::endl;
-  // }
-  // // plannerParams["range"] = "0.001";
-  // move_group.setPlannerParams(plannerStr, PLANNING_GROUP, plannerParams, true);
+  std::map<std::string, std::string> plannerParams = move_group.getPlannerParams(plannerStr, PLANNING_GROUP);
+  std::cout << "Default parameters" << std::endl;
+  std::cout << "==================" << std::endl;
+  for (auto it : plannerParams){
+    std::cout << it.first << ": " << it.second << std::endl;
+  }
+  plannerParams["range"] = "0.001";
+  move_group.setPlannerParams(plannerStr, PLANNING_GROUP, plannerParams, true);
 
   // plannerParams = move_group.getPlannerParams(plannerStr, PLANNING_GROUP);
   // std::cout << "New parameters" << std::endl;
@@ -89,11 +89,30 @@ int main(int argc, char** argv)
 
   // We will use the :planning_scene_interface:`PlanningSceneInterface`
   // class to add and remove collision objects in our "virtual world" scene
-  moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
+ // moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
+
+  ROS_INFO_STREAM("here 1");
+
+
+
+
+  robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
+  robot_model::RobotModelPtr kinematic_model = robot_model_loader.getModel();
+  ROS_INFO("Model frame: %s", kinematic_model->getModelFrame().c_str());
+
+  planning_scene::PlanningScene planning_scene(kinematic_model);
+
+  robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
+  kinematic_state->setToDefaultValues();
+  const robot_state::JointModelGroup* joint_model_group = kinematic_model->getJointModelGroup("panda_arm");
+  robot_state::RobotState& current_state = planning_scene.getCurrentStateNonConst();
   // Raw pointers are frequently used to refer to the planning group for improved performance.
-  const robot_state::JointModelGroup* joint_model_group =
-      move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
+//  const robot_state::JointModelGroup* joint_model_group =
+//      move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
+
+
+  ROS_INFO_STREAM("here 2");
 
   // Visualization
   // ^^^^^^^^^^^^^
@@ -116,6 +135,25 @@ int main(int argc, char** argv)
   // Batch publishing is used to reduce the number of messages being sent to RViz for large visualizations
   visual_tools.trigger();
 
+  moveit::core::RobotStatePtr current_state0 = move_group.getCurrentState();
+  std::vector<double> joint_group_positions;
+  current_state0->copyJointGroupPositions(joint_model_group, joint_group_positions);
+  for (int i=0; i<joint_group_positions.size(); i++) {
+    ROS_INFO_STREAM(i << " - " << joint_group_positions[i]);
+  }
+  joint_group_positions[0] = 0;
+  joint_group_positions[1] = -0.785;
+  joint_group_positions[2] = 0;
+  joint_group_positions[3] = -2.356;
+  joint_group_positions[4] = 0;
+  joint_group_positions[5] = 1.571;
+  joint_group_positions[6] = 0;
+  move_group.setJointValueTarget(joint_group_positions);
+  moveit::planning_interface::MoveGroupInterface::Plan my_plan0;
+  bool success0 = (move_group.plan(my_plan0) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  ROS_INFO_NAMED("tutorial", "Visualizing plan 2 (joint space goal) %s", success0 ? "" : "FAILED");
+  move_group.move();
+
   // Getting Basic Information
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   //
@@ -128,7 +166,7 @@ int main(int argc, char** argv)
   // Start the demo
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   ROS_INFO_STREAM("Demo starting... First: Planning to a Pose goal");
-
+  visual_tools.prompt("Press 'next' to plan to a poes goal");
   // Planning to a Pose goal
   // ^^^^^^^^^^^^^^^^^^^^^^^
   // We can plan a motion for this group to a desired pose for the
@@ -140,10 +178,11 @@ int main(int argc, char** argv)
     << start_pose1.position.z << ")");
 
   geometry_msgs::Pose target_pose1 = start_pose1;
-  target_pose1.position.x = 0.6;
-  target_pose1.position.y = 0.25;
-  target_pose1.position.z = 0.5;
+  target_pose1.position.x = 0.6; //target_pose1.position.x = 0.285075;
+  target_pose1.position.y = 0.25; //target_pose1.position.y = 0.25;
+  target_pose1.position.z = 0.5; //target_pose1.position.z = 0.5;
   move_group.setPoseTarget(target_pose1);
+  move_group.setPlanningTime(20.0);
 
   // Now, we call the planner to compute the plan and visualize it.
   // Note that we are just planning, not asking move_group
@@ -163,6 +202,7 @@ int main(int argc, char** argv)
   visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
   visual_tools.trigger();
 
+    move_group.move();
 
   /*
    * Planning with straight line constraint
@@ -170,10 +210,10 @@ int main(int argc, char** argv)
   visual_tools.prompt("Press 'next' to plan with line constraints");
   geometry_msgs::Pose start_pose2 = move_group.getCurrentPose().pose;
   
-  geometry_msgs::Pose target_pose2 = start_pose2;
-  target_pose2.position.x = 0.6;
-  target_pose2.position.y = 0.25;
-  target_pose2.position.z = 0.5;
+  geometry_msgs::Pose target_pose2 = start_pose1;
+  // target_pose2.position.x = 0.6; //target_pose2.position.x = 0.285075;
+  // target_pose2.position.y = 0.25; //target_pose2.position.y = 0.25;
+  // target_pose2.position.z = 0.5; //target_pose2.position.z = 0.837984;
 
   moveit_msgs::LineConstraint lcm;
   lcm.link_name = "panda_link8";
@@ -210,7 +250,7 @@ int main(int argc, char** argv)
 
   // Planning with constraints can be slow because every sample must call an inverse kinematics solver.
   // Lets increase the planning time from the default 5 seconds to be sure the planner has enough time to succeed.
-  move_group.setPlanningTime(10.0);
+  move_group.setPlanningTime(20.0);
 
   ROS_INFO_STREAM("Starting position: (" 
     << start_pose2.position.x << ", "
@@ -233,17 +273,19 @@ int main(int argc, char** argv)
   visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
   visual_tools.trigger();
 
+  move_group.move();
+
   // When done with the path constraint be sure to clear it.
   move_group.clearPathConstraints();
 
   // Since we set the start state we have to clear it before planning other paths
   move_group.setStartStateToCurrentState();
 
-
   /*
    * Planning with orientation constraint
    */
   visual_tools.prompt("Press 'next' to plan with orientation constraints");
+  geometry_msgs::Pose start_pose3 = move_group.getCurrentPose().pose;
   moveit_msgs::OrientationConstraint ocm;
   ocm.link_name = "panda_link8";
   ocm.header.frame_id = "panda_link0";
@@ -253,11 +295,10 @@ int main(int argc, char** argv)
   ocm.absolute_z_axis_tolerance = 0.1;
   ocm.weight = 1.0;
 
-  geometry_msgs::Pose target_pose3 = target_pose1;
-  target_pose3.orientation.w = 1.0;
-  target_pose3.orientation.x = 0.0;
-  target_pose3.orientation.y = 0.0;
-  target_pose3.orientation.z = 0.0;
+  geometry_msgs::Pose target_pose3 = start_pose3;
+  target_pose3.position.x = start_pose2.position.x;
+  target_pose3.position.y = start_pose2.position.y;
+  target_pose3.position.z = start_pose2.position.z;
 
   // Now, set it as the path constraint for the group.
   moveit_msgs::Constraints test_constraints;
@@ -268,14 +309,7 @@ int main(int argc, char** argv)
   // Note that this will only work if the current state already
   // satisfies the path constraints. So, we need to set the start
   // state to a new pose.
-  robot_state::RobotState start_state(*move_group.getCurrentState());
-  geometry_msgs::Pose start_pose3;
-  start_pose3.orientation.w = 1.0;
-  start_pose3.position.x = 0.55;
-  start_pose3.position.y = -0.05;
-  start_pose3.position.z = 0.8;
-  start_state.setFromIK(joint_model_group, start_pose3);
-  move_group.setStartState(start_state);
+  move_group.setStartStateToCurrentState();
 
   // Now we will plan to the earlier pose target from the new
   // start state that we have just created.
@@ -283,7 +317,7 @@ int main(int argc, char** argv)
 
   // Planning with constraints can be slow because every sample must call an inverse kinematics solver.
   // Lets increase the planning time from the default 5 seconds to be sure the planner has enough time to succeed.
-  move_group.setPlanningTime(10.0);
+  move_group.setPlanningTime(20.0);
 
   success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   ROS_INFO_NAMED("tutorial", "Visualizing plan 3 (orientation constraints) %s", success ? "" : "FAILED");
@@ -295,6 +329,7 @@ int main(int argc, char** argv)
   visual_tools.publishText(text_pose, "Constrained Goal", rvt::WHITE, rvt::XLARGE);
   visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
   visual_tools.trigger();
+  move_group.move();
 
   // When done with the path constraint be sure to clear it.
   move_group.clearPathConstraints();
@@ -305,3 +340,4 @@ int main(int argc, char** argv)
   ros::shutdown();
   return 0;
 }
+
