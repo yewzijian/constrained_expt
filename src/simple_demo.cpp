@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 
   // const std::string plannerStr = "RRTstarkConfigDefault";
   const std::string plannerStr = "RRTConnectkConfigDefault";
-  // const std::string plannerStr = "PRMkConfigDefault";
+  // const std::string plannerStr = "ESTkConfigDefault";
 
   std::map<std::string, std::string> plannerParams = move_group.getPlannerParams(plannerStr, PLANNING_GROUP);
   std::cout << "Default parameters" << std::endl;
@@ -204,13 +204,12 @@ int main(int argc, char** argv)
 
     move_group.move();
 
-  // /*
-  //  * Planning with straight line constraint
-  //  */
-  // visual_tools.prompt("Press 'next' to plan with line constraints");
-  // geometry_msgs::Pose start_pose2 = move_group.getCurrentPose().pose;
+  /*
+   * Planning with straight line constraint
+   */
+  visual_tools.prompt("Press 'next' to plan with line constraints");
+  geometry_msgs::Pose start_pose2 = move_group.getCurrentPose().pose;
   
-<<<<<<< Updated upstream
   geometry_msgs::Pose target_pose2 = start_pose1;
   // target_pose2.position.x = 0.6; //target_pose2.position.x = 0.285075;
   // target_pose2.position.y = 0.25; //target_pose2.position.y = 0.25;
@@ -281,162 +280,37 @@ int main(int argc, char** argv)
 
   // Since we set the start state we have to clear it before planning other paths
   move_group.setStartStateToCurrentState();
-=======
-  // geometry_msgs::Pose target_pose2 = start_pose2;
-  // target_pose2.position.x = 0.6;
-  // target_pose2.position.y = 0.25;
-  // target_pose2.position.z = 0.5;
-
-  // moveit_msgs::LineConstraint lcm;
-  // lcm.link_name = "panda_link8";
-  // lcm.header.frame_id = "panda_link0";
-  // lcm.line_start.x = start_pose2.position.x;
-  // lcm.line_start.y = start_pose2.position.y;
-  // lcm.line_start.z = start_pose2.position.z;
-  // lcm.line_end.x = target_pose2.position.x;
-  // lcm.line_end.y = target_pose2.position.y;
-  // lcm.line_end.z = target_pose2.position.z;
-  // lcm.tolerance = 0.01;
-  // lcm.weight = 1.0;
-
-  // moveit_msgs::OrientationConstraint ocm2;
-  // ocm2.link_name = "panda_link8";
-  // ocm2.header.frame_id = "panda_link0";
-  // ocm2.orientation.w = start_pose2.orientation.w;
-  // ocm2.orientation.x = start_pose2.orientation.x;
-  // ocm2.orientation.y = start_pose2.orientation.y;
-  // ocm2.orientation.z = start_pose2.orientation.z;
-  // ocm2.absolute_x_axis_tolerance = 0.01;
-  // ocm2.absolute_y_axis_tolerance = 0.01;
-  // ocm2.absolute_z_axis_tolerance = 0.01;
-  // ocm2.weight = 1.0;
-
-  // // Now, set it as the path constraint for the group.
-  // moveit_msgs::Constraints test_constraints2;
-  // test_constraints2.line_constraints.push_back(lcm);
-  // // test_constraints2.orientation_constraints.push_back(ocm2);
-  // move_group.setPathConstraints(test_constraints2);
-
-  // move_group.setStartStateToCurrentState();
-  // move_group.setPoseTarget(target_pose2);
-
-  // // Planning with constraints can be slow because every sample must call an inverse kinematics solver.
-  // // Lets increase the planning time from the default 5 seconds to be sure the planner has enough time to succeed.
-  // move_group.setPlanningTime(10.0);
-
-  // ROS_INFO_STREAM("Starting position: (" 
-  //   << start_pose2.position.x << ", "
-  //   << start_pose2.position.y << ", "
-  //   << start_pose2.position.z << ")");
-  // ROS_INFO_STREAM("End position: (" 
-  //   << target_pose2.position.x << ", "
-  //   << target_pose2.position.y << ", "
-  //   << target_pose2.position.z << ")");
-
-
-  // success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-  // ROS_INFO_NAMED("tutorial", "Visualizing plan 2 (line constraints) %s", success ? "" : "FAILED");
-
-  // // Visualize the plan in RViz
-  // visual_tools.deleteAllMarkers();
-  // visual_tools.publishAxisLabeled(start_pose2, "start");
-  // visual_tools.publishAxisLabeled(target_pose2, "goal");
-  // visual_tools.publishText(text_pose, "Constrained Goal", rvt::WHITE, rvt::XLARGE);
-  // visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
-  // visual_tools.trigger();
-
-  // // When done with the path constraint be sure to clear it.
-  // move_group.clearPathConstraints();
-
-  // // Since we set the start state we have to clear it before planning other paths
-  // move_group.setStartStateToCurrentState();
->>>>>>> Stashed changes
 
   /*
    * Planning with orientation constraint
    */
   visual_tools.prompt("Press 'next' to plan with orientation constraints");
-<<<<<<< Updated upstream
   geometry_msgs::Pose start_pose3 = move_group.getCurrentPose().pose;
-=======
-
-  // We will reuse the old goal that we had and plan to it.
-  // Note that this will only work if the current state already
-  // satisfies the path constraints. So, we need to set the start
-  // state to a new pose.
-  robot_state::RobotState start_state(*move_group.getCurrentState());
-  geometry_msgs::Pose start_pose3;
-  start_pose3.orientation.w = 0.0;
-  start_pose3.orientation.x = 1.0;
-  start_pose3.orientation.y = 0.0;
-  start_pose3.orientation.z = 0.0;
-  start_pose3.position.x = 0.6;
-  start_pose3.position.y = -0.25;
-  start_pose3.position.z = 0.5;
-  start_state.setFromIK(joint_model_group, start_pose3);
-  move_group.setStartState(start_state);
-
-
->>>>>>> Stashed changes
   moveit_msgs::OrientationConstraint ocm;
   ocm.link_name = "panda_link8";
   ocm.header.frame_id = "panda_link0";
-  ocm.orientation.w = 0.0;
-  ocm.orientation.x = 0.0;
-  ocm.orientation.y = 1.0;
-  ocm.orientation.z = 0.0;
+  ocm.orientation.w = 1.0;
   ocm.absolute_x_axis_tolerance = 0.1;
   ocm.absolute_y_axis_tolerance = 0.1;
-  ocm.absolute_z_axis_tolerance = 3.14;
+  ocm.absolute_z_axis_tolerance = 0.1;
   ocm.weight = 1.0;
 
-<<<<<<< Updated upstream
   geometry_msgs::Pose target_pose3 = start_pose3;
   target_pose3.position.x = start_pose2.position.x;
   target_pose3.position.y = start_pose2.position.y;
   target_pose3.position.z = start_pose2.position.z;
-=======
-  geometry_msgs::Pose target_pose3 = target_pose1;
-  target_pose3.position.x = 0.25;
-  target_pose3.position.y = 0.6;
-  target_pose3.position.z = 0.5;
-  target_pose3.orientation.w = 0.0;
-  target_pose3.orientation.x = 1.0;
-  target_pose3.orientation.y = 0.0;
-  target_pose3.orientation.z = 0.0;
->>>>>>> Stashed changes
-
-
-  moveit_msgs::LineConstraint lcm2;
-  lcm2.link_name = "panda_link8";
-  lcm2.header.frame_id = "panda_link0";
-  lcm2.line_start.x = start_pose3.position.x;
-  lcm2.line_start.y = start_pose3.position.y;
-  lcm2.line_start.z = start_pose3.position.z;
-  lcm2.line_end.x = target_pose3.position.x;
-  lcm2.line_end.y = target_pose3.position.y;
-  lcm2.line_end.z = target_pose3.position.z;
-  lcm2.tolerance = 0.02;
-  lcm2.weight = 1.0;
-
-  // // Now, set it as the path constraint for the group.
-  // moveit_msgs::Constraints test_constraints2;
 
   // Now, set it as the path constraint for the group.
   moveit_msgs::Constraints test_constraints;
   test_constraints.orientation_constraints.push_back(ocm);
-  test_constraints.line_constraints.push_back(lcm2);
   move_group.setPathConstraints(test_constraints);
 
-<<<<<<< Updated upstream
   // We will reuse the old goal that we had and plan to it.
   // Note that this will only work if the current state already
   // satisfies the path constraints. So, we need to set the start
   // state to a new pose.
   move_group.setStartStateToCurrentState();
 
-=======
->>>>>>> Stashed changes
   // Now we will plan to the earlier pose target from the new
   // start state that we have just created.
   move_group.setPoseTarget(target_pose3);
