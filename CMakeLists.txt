@@ -49,29 +49,16 @@ include_directories(SYSTEM ${THIS_PACKAGE_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${E
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 
-add_executable(simple_demo src/simple_demo.cpp)
-<<<<<<< HEAD
-add_executable(simple_demo3 src/simple_demo3.cpp)
 add_executable(arc_demo1 src/arc_demo1.cpp)
 add_executable(arc_demo2 src/arc_demo2.cpp)
 add_executable(arc_demo3 src/arc_demo3.cpp)
 add_executable(arc_demo4 src/arc_demo4.cpp)
 add_executable(arc_demo5 src/arc_demo5.cpp)
+add_executable(run_eval src/run_eval.cpp)
 
-
-target_link_libraries(simple_demo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(simple_demo3 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(arc_demo1 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(arc_demo2 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(arc_demo3 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(arc_demo4 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(arc_demo5 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-=======
-target_link_libraries(simple_demo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-
-add_executable(generate_problems src/generate_problems.cpp)
-target_link_libraries(generate_problems ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-
-add_executable(run_eval src/run_eval.cpp)
 target_link_libraries(run_eval ${catkin_LIBRARIES} ${Boost_LIBRARIES})
->>>>>>> b657db97d95f69387ecc4cab3f782fbf674a2017

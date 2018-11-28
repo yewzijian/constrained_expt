@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#define NUM_PROBLEMS 20
+#define NUM_PROBLEMS 40
 
 int main(int argc, char** argv)
 {
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   move_group.setPlanningTime(10.0);
   moveit::planning_interface::MoveGroupInterface::Plan computedPlan;
 
-  ofstream outFile("problems1.txt");
+  ofstream outFile("problems2.txt");
   for (int iProb=0; iProb<NUM_PROBLEMS && ros::ok(); iProb++) {
 
     bool success = false;
@@ -41,11 +41,23 @@ int main(int argc, char** argv)
       // Ensure starting state is reachable at least by planning
       move_group.setStartStateToCurrentState();
       move_group.setJointValueTarget(randomJoints);
-      success = (move_group.plan(computedPlan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+      success = (move_group.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+      if (!success)
+        continue;
+
+      // Ensure upright
+      move_group.setOrientationTarget(0.0, 0.0, 0.0, 1.0);
+      success = (move_group.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     }
+    randomJoints = move_group.getCurrentJointValues();
 
     // Generate 
     geometry_msgs::PoseStamped randomPoseMsg = move_group.getRandomPose();
+    randomPoseMsg.pose.orientation.w = 1.0;
+    randomPoseMsg.pose.orientation.x = 0.0;
+    randomPoseMsg.pose.orientation.y = 0.0;
+    randomPoseMsg.pose.orientation.z = 0.0;
 
     if (iProb == 0) {
       for (size_t i=0; i<randomJoints.size(); i++) {

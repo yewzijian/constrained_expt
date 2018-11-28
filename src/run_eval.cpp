@@ -18,6 +18,8 @@
 #include <thread>
 
 #define NUM_JOINTS 7
+#define CONSTRAINED_PLANNING_TIME 20.0
+#define UNCONSTRAINED_PLANNING_TIME 10.0
 
 using namespace std;
 
@@ -95,7 +97,7 @@ void runUnconstrainedExpt(const vector<string> & planners, const string & proble
                           moveit_visual_tools::MoveItVisualTools & visual_tools,
                           const robot_state::JointModelGroup* joint_model_group)
 {
-  vector<Problem> problems = loadProblems("problems1.txt");
+  vector<Problem> problems = loadProblems(problemsPath);
   for (string plannerStr : planners) {
 
     // Create file
@@ -105,7 +107,7 @@ void runUnconstrainedExpt(const vector<string> & planners, const string & proble
     ROS_INFO_STREAM("------------------------------------------------");
 
     move_group.setPlannerId(plannerStr);
-    move_group.setPlanningTime(10.0);
+    move_group.setPlanningTime(UNCONSTRAINED_PLANNING_TIME);
 
     for (size_t iProb=0; iProb<problems.size() && ros::ok(); iProb++) {
 
@@ -186,7 +188,7 @@ void runOriConstrainedExpt(const vector<string> & planners, const string & probl
                           moveit_visual_tools::MoveItVisualTools & visual_tools,
                           const robot_state::JointModelGroup* joint_model_group)
 {
-  vector<Problem> problems = loadProblems("problems1.txt");
+  vector<Problem> problems = loadProblems(problemsPath);
   for (string plannerStr : planners) {
 
     // Create file
@@ -196,7 +198,7 @@ void runOriConstrainedExpt(const vector<string> & planners, const string & probl
     ROS_INFO_STREAM("------------------------------------------------");
 
     move_group.setPlannerId(plannerStr);
-    move_group.setPlanningTime(20.0);
+    move_group.setPlanningTime(CONSTRAINED_PLANNING_TIME);
 
     for (size_t iProb=0; iProb<problems.size() && ros::ok(); iProb++) {
 
@@ -247,7 +249,7 @@ void runOriConstrainedExpt(const vector<string> & planners, const string & probl
         ocm.orientation.z = start_pose.orientation.z;
         ocm.absolute_x_axis_tolerance = 0.1;
         ocm.absolute_y_axis_tolerance = 0.1;
-        ocm.absolute_z_axis_tolerance = 0.1;
+        ocm.absolute_z_axis_tolerance = 3.14;
         ocm.weight = 1.0;
 
         // Now, set it as the path constraint for the group.
@@ -295,7 +297,7 @@ void runLineConstrainedExpt(const vector<string> & planners, const string & prob
                           moveit_visual_tools::MoveItVisualTools & visual_tools,
                           const robot_state::JointModelGroup* joint_model_group)
 {
-  vector<Problem> problems = loadProblems("problems1.txt");
+  vector<Problem> problems = loadProblems(problemsPath);
   for (string plannerStr : planners) {
 
     // Create file
@@ -305,7 +307,7 @@ void runLineConstrainedExpt(const vector<string> & planners, const string & prob
     ROS_INFO_STREAM("------------------------------------------------");
 
     move_group.setPlannerId(plannerStr);
-    move_group.setPlanningTime(20.0);
+    move_group.setPlanningTime(CONSTRAINED_PLANNING_TIME);
 
     for (size_t iProb=0; iProb<problems.size() && ros::ok(); iProb++) {
 
@@ -432,24 +434,24 @@ int main(int argc, char** argv)
    * Set planners and parameters here
    */
   vector<string> planners;
-  // planners.push_back("RRTstarkConfigDefault");
+  planners.push_back("RRTkConfigDefault");
   planners.push_back("RRTConnectkConfigDefault");
-  // planners.push_back("ESTkConfigDefault");
+  planners.push_back("ESTkConfigDefault");
 
-  for (string plannerStr : planners) {
-    std::map<std::string, std::string> plannerParams = move_group.getPlannerParams(plannerStr, PLANNING_GROUP);
-    plannerParams["range"] = "0.001";
-    move_group.setPlannerParams(plannerStr, PLANNING_GROUP, plannerParams, true);
-  }
+  // for (string plannerStr : planners) {
+  //   std::map<std::string, std::string> plannerParams = move_group.getPlannerParams(plannerStr, PLANNING_GROUP);
+  //   plannerParams["range"] = "0.01";
+  //   move_group.setPlannerParams(plannerStr, PLANNING_GROUP, plannerParams, true);
+  // }
 
   /*
    * Run experiment
    */
-  // runUnconstrainedExpt(planners, "problems1.txt",
-  //                      move_group, visual_tools, joint_model_group);
-  // runOriConstrainedExpt(planners, "problems1.txt",
-  //                      move_group, visual_tools, joint_model_group);
-  runLineConstrainedExpt(planners, "problems1.txt",
+  runUnconstrainedExpt(planners, "test_data/problems1.txt",
+                       move_group, visual_tools, joint_model_group);
+  runOriConstrainedExpt(planners, "test_data/problems2.txt",
+                       move_group, visual_tools, joint_model_group);
+  runLineConstrainedExpt(planners, "test_data/problems3.txt",
                        move_group, visual_tools, joint_model_group);
 
 
